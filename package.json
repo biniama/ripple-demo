@@ -1,0 +1,33 @@
+{
+  "name": "ripple-demo",
+  "version": "1.0.0",
+  "description": "First application for testing Ripple API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/biniama/ripple-demo.git"
+  },
+  "author": "Biniam Asnake",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/biniama/ripple-demo/issues"
+  },
+  "homepage": "https://github.com/biniama/ripple-demo#readme",
+  "private": true,
+  "dependencies": {
+    "ripple-lib": "*",
+    "babel-cli": "^6.0.0",
+    "babel-preset-es2015": "*"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "devDependencies": {
+    "eslint": "*"
+  }
+}
