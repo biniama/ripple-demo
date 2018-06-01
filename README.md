@@ -4,6 +4,9 @@ First application for testing Ripple API
 # Guide
 https://ripple.com/build/rippleapi-beginners-guide/#rippleapi-beginners-guide
 
+# Setup
+`npm install`
+
 # How to run
 `./node_modules/.bin/babel-node get-account-info.js`
 

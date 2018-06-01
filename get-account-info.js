@@ -2,12 +2,13 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
 
 const api = new RippleAPI({
-    server: 'wss://s1.ripple.com'   //Public rippled server
+    //server: 'wss://s1.ripple.com'   //Public rippled server
+    server: 'https://s.altnet.rippletest.net:51234'
 })
 
 api.connect().then(() => {
     /* begin custom code ------------------------------------ */
-    const myAddress = 'rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn';
+    const myAddress = 'r3WdRJrGYySRnv8WgNi4T5rA42zySfPtBd';
     
     console.log('getting account info for', myAddress);
     return api.getAccountInfo(myAddress);

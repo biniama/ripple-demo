@@ -1,11 +1,14 @@
+//A Payment transaction represents a transfer of value from one account to another.
+//Payments are also the only way to create accounts.
+
 'use strict';
 /* import RippleAPI and support libraries */
 const RippleAPI = require('ripple-lib').RippleAPI;
 const assert = require('assert');
 
 /* Credentials of the account placing the order */
-const myAddr = 'rh3YMnG2kuFCHde3RZiHwNa4U1q4a6skFz';
-const mySecret = 'shNJ3oMV16FapRB373Qq7Ztjaog2q';
+const address = "rh3YMnG2kuFCHde3RZiHwNa4U1q4a6skFz";
+const secret = 'shNJ3oMV16FapRB373Qq7Ztjaog2q';
 
 /* Instantiate RippleAPI. Uses s2 (full history server) */
 const api = new RippleAPI({
@@ -18,20 +21,6 @@ const INTERVAL = 1000;
 /* Number of ledgers to check for valid transaction before failing */
 const ledgerOffset = 5;
 const myInstructions = {maxLedgerVersionOffset: ledgerOffset};
-
-/* Define the order to place here */
-const myOrder = {
-    'direction': 'buy',
-    'quantity': {
-      'currency': 'FOO',
-      'counterparty': 'r4fnMFFyXEUUJ9xqg1UtB9ZnbFEPJcF97c',
-      'value': '100'
-    },
-    'totalPrice': {
-      'currency': 'XRP',
-      'value': '1000'
-    }
-  };
 
 /* Verify a transaction is in a validated XRP Ledger version */
 function verifyTransaction(hash, options) {
@@ -56,7 +45,7 @@ function verifyTransaction(hash, options) {
 
 /* Function to prepare, sign, and submit a transaction to the XRP Ledger. */
 function submitTransaction(lastClosedLedgerVersion, prepared, secret) {
-    const signedData = api.sign(prepared.txJSON, secret);
+    const signedData = api.sign(prepared, secret);
     return api.submit(signedData.signedTransaction).then(data => {
       console.log('Tentative Result: ', data.resultCode);
       console.log('Tentative Message: ', data.resultMessage);
@@ -67,7 +56,7 @@ function submitTransaction(lastClosedLedgerVersion, prepared, secret) {
       /* If successfully submitted, begin validation workflow */
       const options = {
         minLedgerVersion: lastClosedLedgerVersion,
-        maxLedgerVersion: prepared.instructions.maxLedgerVersion
+        maxLedgerVersion: lastClosedLedgerVersion + 5
       };
       return new Promise((resolve, reject) => {
         setTimeout(() => verifyTransaction(signedData.id, options)
@@ -78,12 +67,34 @@ function submitTransaction(lastClosedLedgerVersion, prepared, secret) {
   
 api.connect().then(() => {
     console.log('Connected');
-    return api.prepareOrder(myAddr, myOrder, myInstructions);
-  }).then(prepared => {
-    console.log('Order Prepared');
     return api.getLedger().then(ledger => {
       console.log('Current Ledger', ledger.ledgerVersion);
-      return submitTransaction(ledger.ledgerVersion, prepared, mySecret);
+      const maxLedgerVersion = ledger.ledgerVersion + 5;
+
+      return api.getAccountInfo(address).then(info =>  {
+        console.log("info.sequence ", info.sequence);
+        const sequenceNumber = info.sequence;
+
+        // FLAG => tfFullyCanonicalSig = 2147483648	= (Strongly recommended) Require a fully-canonical signature.
+        var txJSON = `{
+          "TransactionType": "Payment",
+          "Account": "rh3YMnG2kuFCHde3RZiHwNa4U1q4a6skFz",
+          "Destination": "rKtPQgCQRyd7dxm1kJ1rA7CnsGADm3yfCt",
+          "Amount": "200000000",
+          "Flags": 2147483648,
+          "LastLedgerSequence": ` + maxLedgerVersion + `,
+          "Fee": "12",
+          "Sequence": ` + sequenceNumber + `
+        }`;
+  
+        return txJSON;
+      }).catch(err => console.error(err));
+    });
+  }).then(prepared => {
+    console.log('Order Prepared ' + prepared);
+    return api.getLedger().then(ledger => {
+      console.log('Current Ledger', ledger.ledgerVersion);
+      return submitTransaction(ledger.ledgerVersion, prepared, secret);
     });
   }).then(() => {
     api.disconnect().then(() => {
