@@ -6,6 +6,8 @@ const api = new RippleAPI({
 
 var maxLedgerVersion;
 var sequenceNumber;
+var txJSON;
+
 const address = "rh3YMnG2kuFCHde3RZiHwNa4U1q4a6skFz";
 const secret = 'shNJ3oMV16FapRB373Qq7Ztjaog2q';
 
@@ -19,7 +21,7 @@ api.connect().then(() => {
       console.log("info.sequence ", info.sequence);
     }).catch(console.error);
 
-    const txJSON = `{
+    txJSON = `{
       "TransactionType": "Payment",
       "Account": "rh3YMnG2kuFCHde3RZiHwNa4U1q4a6skFz",
       "Destination": "rKtPQgCQRyd7dxm1kJ1rA7CnsGADm3yfCt",

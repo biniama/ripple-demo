@@ -2,21 +2,19 @@
 const RippleAPI = require('ripple-lib').RippleAPI;
 
 const api = new RippleAPI({
-    //server: 'wss://s1.ripple.com'   //Public rippled server
-    server: 'https://s.altnet.rippletest.net:51234'
-})
+    server: 'wss://s.altnet.rippletest.net:51233'
+});
 
 api.connect().then(() => {
-    /* begin custom code ------------------------------------ */
-    const myAddress = 'r3WdRJrGYySRnv8WgNi4T5rA42zySfPtBd';
-    
-    console.log('getting account info for', myAddress);
-    return api.getAccountInfo(myAddress);
-}).then(info => {
-    console.log(info);
-    console.log('getAccountInfo done');
-  
-    /* end custom code -------------------------------------- */
+    // Request account_info, log response...
+    const myAddress = 'rh3YMnG2kuFCHde3RZiHwNa4U1q4a6skFz';   //source
+    //const myAddress = 'rKtPQgCQRyd7dxm1kJ1rA7CnsGADm3yfCt';     //destination
+    console.log('Getting account info for ', myAddress);
+
+    api.getAccountInfo(myAddress).then(info => {
+      console.log(info);
+      console.log('getAccountInfo done');
+    });
 }).then(() => {
     return api.disconnect();
 }).then(() => {
